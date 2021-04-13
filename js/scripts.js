@@ -64,7 +64,7 @@ function cardHandlers(data) {
 }
 //The generateModal function accepts two arguments (data and index) and creates a modal with that information.
 function generateModal(data, index) {
-  let phoneNumber = `${data[index].phone.replace(/[^\d]/g, "")}`
+  let phoneNumber = `${data[index].cell.replace(/[^\d]/g, "")}`
   let reformattedPhone = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"); //Adapted from https://stackoverflow.com/questions/8358084/regular-expression-to-reformat-a-us-phone-number-in-javascript
   let dob = new Date(data[index].dob.date);
   let birthday = `${dob.getMonth()+1}/${dob.getDate()}/${dob.getFullYear()}`
@@ -86,18 +86,18 @@ function generateModal(data, index) {
                     <button type="button" id="modal-next" class="modal-next btn">Next</button>
                 </div>
             </div>`;
-  console.log(data.length);
-  modalContainer.innerHTML = personModal;
-  modalContainer.style.display = 'flex';
-  personGallery[0].insertAdjacentElement('afterend', modalContainer); //Inserting the modal so it displays.
 
-  if (index -1 < 0) { //Disabling the Prev button at the beginning of the array.
+  modalContainer.innerHTML = personModal;
+  modalContainer.style.display = 'flex'; //Updating the modal style from 'none' to 'flex'.
+  personGallery[0].insertAdjacentElement('afterend', modalContainer); //Inserting the modal so it displays.
+  //Disabling the Prev button at the beginning of the array.
+  if (index -1 < 0) { 
     document.getElementById('modal-prev').classList.add('disabled-btn');
     document.getElementById('modal-prev').classList.remove('btn');
     document.getElementById('modal-prev').disabled = true;
   }
-  
-  if (index + 1 === data.length) { //Disabling the Next button at the end of the array.
+  //Disabling the Next button at the end of the array.
+  if (index + 1 === data.length) { 
     document.getElementById('modal-next').classList.add('disabled-btn');
     document.getElementById('modal-next').classList.remove('btn');
     document.getElementById('modal-next').disabled = true;
@@ -126,9 +126,18 @@ function generateModal(data, index) {
   });
 
 }
+
+//Adds a function so clicking anywhere outside of the modal closes it.
+window.onclick = function(event) {
+  if (event.target.className == 'modal-container') {
+    document.getElementsByClassName('modal-container')[0].style.display = "none";
+  }
+}
+
 /*
 The searchEmployees function accepts an input parameter to search the directory.
 If the full name of the employee matches with the search input, the person is passed to the filterResults array.
+If there are no matching results, an appropriate message is displayed.
 */
 function searchEmployees(input) {
   personGallery.innerHTML = '';
