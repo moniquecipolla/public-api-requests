@@ -48,11 +48,14 @@ function generateGallery(data) {
   
   personGallery[0].innerHTML = divCard;
 };
-//The cardHandlers function adds an event listener to the employee cards.
+/*
+The cardHandlers function adds an event listener to the employee cards.
+Adapted from https://gomakethings.com/how-to-get-the-index-of-an-object-in-an-array-with-vanilla-js/
+*/
 function cardHandlers(data) {
    for (let i = 0; i < personCards.length; i++) {
      personCards[i].addEventListener('click', () => {
-     const personIndex = data.findIndex(function (person) { //Adapted from https://gomakethings.com/how-to-get-the-index-of-an-object-in-an-array-with-vanilla-js/
+     const personIndex = data.findIndex(function (person) {
         //Checks the email *and* state location (to account for potential duplicate emails) of selected person against email and location in dataArray.
         if (person.email === data[i].email && person.location.state === data[i].location.state)
         //Returns the employee name to the findIndex function to retrieve the index position of the employee.
