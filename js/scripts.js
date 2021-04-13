@@ -127,7 +127,7 @@ function generateModal(data, index) {
 
 }
 
-//Adds a function so clicking anywhere outside of the modal closes it.
+//Adds a function so clicking anywhere outside of the modal closes it. Adapted from https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal_close.
 window.onclick = function(event) {
   if (event.target.className == 'modal-container') {
     document.getElementsByClassName('modal-container')[0].style.display = "none";
