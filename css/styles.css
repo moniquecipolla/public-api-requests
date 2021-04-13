@@ -218,10 +218,10 @@ header h1 {
   display: inline-block;
     cursor: pointer;
     font-size: 0.85em;
-    color: #D5DADA;
+    color: black;
     text-transform: uppercase;
     padding: 0.75em 1.5em;
-    background: black;
+    background: #D5DADA;
     border-radius: 0.35em;
     border-color: #F4FEFF;
     transition: .4s ease-out;

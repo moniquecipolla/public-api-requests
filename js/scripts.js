@@ -13,20 +13,27 @@ let search = `<form action="#" method="get">
                         </form>`;
 let searchInput = document.getElementsByClassName('search-input');
 let submitInput = document.getElementsByClassName('search-submit');
-  searchContainer[0].insertAdjacentHTML('beforeend', search);
-
-fetch(randomUsersApi)
+  searchContainer[0].insertAdjacentHTML('beforeend', search); //Adding the search feature to the page.
+/*
+This fetches data from the Random Users API, then:
+* Parses the results to JSON
+* Creates an array from that data and passes that array to the generateGallery and cardHandlers functions.
+* Catches errors and returns an error message if one is encountered.
+*/
+fetch(randomUsersApi) 
   .then(results => results.json())
   .then(data => {
     dataArray = Array.from(data.results);
     generateGallery(dataArray);
+    cardHandlers(dataArray);
   })
   .catch(error => {
       personGallery[0].innerHTML = `<h1>There was an issue gathering the data: ${error}.</h1>`
+      console.log(error);
     })
 
+//The generateGallery function generates the gallery of people and displays it on the page.
 function generateGallery(data) {
-  personGallery[0].innerHTML = '';
   let divCard = data.map(person => `<div class="card">
                    <div class="card-img-container">
                         <img class="card-img" src="${person.picture.large}" alt="profile picture">
@@ -40,22 +47,22 @@ function generateGallery(data) {
   ).join('');
   
   personGallery[0].innerHTML = divCard;
-
-  cardHandlers(data);
 };
-
+//The cardHandlers function adds an event listener to the employee cards.
 function cardHandlers(data) {
    for (let i = 0; i < personCards.length; i++) {
      personCards[i].addEventListener('click', () => {
      const personIndex = data.findIndex(function (person) { //Adapted from https://gomakethings.com/how-to-get-the-index-of-an-object-in-an-array-with-vanilla-js/
+        //Checks the email *and* state location (to account for potential duplicate emails) of selected person against email and location in dataArray.
         if (person.email === data[i].email && person.location.state === data[i].location.state)
+        //Returns the employee name to the findIndex function to retrieve the index position of the employee.
         return person.name.first;
       });
-      generateModal(data, personIndex);
+      generateModal(data, personIndex);//Passes the data and index of the selected employee to the generateModal function.
     });
     }
 }
-
+//The generateModal function accepts two arguments (data and index) and creates a modal with that information.
 function generateModal(data, index) {
   let phoneNumber = `${data[index].phone.replace(/[^\d]/g, "")}`
   let reformattedPhone = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"); //Adapted from https://stackoverflow.com/questions/8358084/regular-expression-to-reformat-a-us-phone-number-in-javascript
@@ -79,62 +86,66 @@ function generateModal(data, index) {
                     <button type="button" id="modal-next" class="modal-next btn">Next</button>
                 </div>
             </div>`;
-  
+  console.log(data.length);
   modalContainer.innerHTML = personModal;
   modalContainer.style.display = 'flex';
-  personGallery[0].insertAdjacentElement('afterend', modalContainer);
-  console.log(index);
-  console.log(data.length);
+  personGallery[0].insertAdjacentElement('afterend', modalContainer); //Inserting the modal so it displays.
 
-  if (index -1 < 0) {
+  if (index -1 < 0) { //Disabling the Prev button at the beginning of the array.
     document.getElementById('modal-prev').classList.add('disabled-btn');
     document.getElementById('modal-prev').classList.remove('btn');
     document.getElementById('modal-prev').disabled = true;
-  } else if (index+1 >= data.length) {
+  }
+  
+  if (index + 1 === data.length) { //Disabling the Next button at the end of the array.
     document.getElementById('modal-next').classList.add('disabled-btn');
     document.getElementById('modal-next').classList.remove('btn');
     document.getElementById('modal-next').disabled = true;
   }
-
-  function modalHandler(button) {
-    if (button === 'X') {
+  //modalHandler accepts buttonText as an argument and calls generateModal or closes the modal accordingly..
+  function modalHandler(buttonText) {
+    if (buttonText === 'X') {
       modalContainer.style.display = 'none';
-    } else if (button === 'Prev') {
+    } else if (buttonText === 'Prev') {
       generateModal(data, index-1);
-    } else if (button === 'Next') {
+    } else if (buttonText === 'Next') {
       generateModal(data, index+1);
     }
   }
-
-  document.getElementById('modal-close-btn').addEventListener('click', () => {
+  //The event listeners below call the modalHandler function and pass it the text content of the selected button.
+  document.getElementById('modal-close-btn').addEventListener('click', (event) => {
     modalHandler(event.target.textContent);
   });
 
-  document.getElementById('modal-prev').addEventListener('click', () => {
+  document.getElementById('modal-prev').addEventListener('click', (event) => {
     modalHandler(event.target.textContent);
   });
 
- document.getElementById('modal-next').addEventListener('click', () => {
+ document.getElementById('modal-next').addEventListener('click', (event) => {
     modalHandler(event.target.textContent);
   });
 
 }
-
+/*
+The searchEmployees function accepts an input parameter to search the directory.
+If the full name of the employee matches with the search input, the person is passed to the filterResults array.
+*/
 function searchEmployees(input) {
   personGallery.innerHTML = '';
   let filteredResults = [];
-  for (let i = 0; i < dataArray.length; i++) {
-    let fullName = `${dataArray[i].name.first} ${dataArray[i].name.last}`
-    if (fullName.toLowerCase().includes(input.toLowerCase())) {
-      searchInput[0].classList.remove('clear');
-      filteredResults.push(dataArray[i]);
+  dataArray.forEach(person => {
+    let fullName = `${person.name.first} ${person.name.last}`
+    if (fullName.toLocaleLowerCase().includes(input.toLocaleLowerCase())) {
+      filteredResults.push(person);
       generateGallery(filteredResults);
-     }
-  } if (filteredResults.length === 0) {
+      cardHandlers(filteredResults);
+    }
+  });
+  if (filteredResults.length === 0) {
       personGallery[0].innerHTML = '<h1>Sorry, no results found.</h1>';
   }
 }
-
+//Event listeners for the search function.
 searchInput[0].addEventListener('keyup', () => {
   searchEmployees(searchInput[0].value);
 });
