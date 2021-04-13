@@ -91,7 +91,7 @@ function generateModal(data, index) {
             </div>`;
 
   modalContainer.innerHTML = personModal;
-  modalContainer.style.display = 'flex'; //Updating the modal style from 'none' to 'flex'.
+  modalContainer.style.display = 'block'; //Updating the modal style from 'none' to 'block'.
   personGallery[0].insertAdjacentElement('afterend', modalContainer); //Inserting the modal so it displays.
   //Disabling the Prev button at the beginning of the array.
   if (index -1 < 0) { 
