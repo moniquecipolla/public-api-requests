@@ -1,13 +1,13 @@
 //Declaring global variables to be used in the following code.
-const randomUsersApi = 'https://randomuser.me/api?results=12&&nat=us';
+const randomUsersApi = 'https://randomuser.me/api?results=12&nat=us&lego';
 const personGallery = document.getElementsByClassName('gallery');
 const personCards = document.getElementsByClassName('card');
 const modalContainer = document.createElement('div');
   modalContainer.className = 'modal-container';
   modalContainer.style.display = 'none';
 let dataArray;
-let searchContainer = document.getElementsByClassName('search-container');
-let search = `<form action="#" method="get">
+const searchContainer = document.getElementsByClassName('search-container');
+const search = `<form action="#" method="get">
                             <input type="search" id="search-input" class="search-input" placeholder="Search by name...">
                             <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
                         </form>`;
@@ -17,7 +17,7 @@ let submitInput = document.getElementsByClassName('search-submit');
 /*
 This fetches data from the Random Users API, then:
 * Parses the results to JSON
-* Creates an array from that data and passes that array to the generateGallery and cardHandlers functions.
+* Creates an array from that data and passes that array to the generateGallery and cardHandler functions.
 * Catches errors and returns an error message if one is encountered.
 */
 fetch(randomUsersApi) 
@@ -25,7 +25,7 @@ fetch(randomUsersApi)
   .then(data => {
     dataArray = Array.from(data.results);
     generateGallery(dataArray);
-    cardHandlers(dataArray);
+    cardHandler(dataArray);
   })
   .catch(error => {
       personGallery[0].innerHTML = `<h1>There was an issue gathering the data: ${error}.</h1>`
@@ -49,10 +49,10 @@ function generateGallery(data) {
   personGallery[0].innerHTML = divCard;
 };
 /*
-The cardHandlers function adds an event listener to the employee cards.
+The cardHandler function adds an event listener to the employee cards.
 Adapted from https://gomakethings.com/how-to-get-the-index-of-an-object-in-an-array-with-vanilla-js/
 */
-function cardHandlers(data) {
+function cardHandler(data) {
    for (let i = 0; i < personCards.length; i++) {
      personCards[i].addEventListener('click', () => {
      const personIndex = data.findIndex(function (person) {
@@ -67,10 +67,10 @@ function cardHandlers(data) {
 }
 //The generateModal function accepts two arguments (data and index) and creates a modal with that information.
 function generateModal(data, index) {
-  let phoneNumber = `${data[index].cell.replace(/[^\d]/g, "")}`
+  let phoneNumber = `${data[index].cell.replace(/[^\d]/g, "")}`;
   let reformattedPhone = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"); //Adapted from https://stackoverflow.com/questions/8358084/regular-expression-to-reformat-a-us-phone-number-in-javascript
   let dob = new Date(data[index].dob.date);
-  let birthday = `${dob.getMonth()+1}/${dob.getDate()}/${dob.getFullYear()}`
+  let birthday = `${dob.getMonth()+1}/${dob.getDate()}/${dob.getFullYear()}`;
   let personModal = `
                     <div class="modal">
                     <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
@@ -81,7 +81,7 @@ function generateModal(data, index) {
                         <p class="modal-text cap">${data[index].location.city}</p>
                         <hr>
                         <p class="modal-text">${reformattedPhone}</p>
-                        <p class="modal-text">${data[index].location.street.number} ${data[index].location.street.name} ${data[index].location.city} ${data[index].location.state} ${data[index].location.postcode}</p>
+                        <p class="modal-text">${data[index].location.street.number} ${data[index].location.street.name}.<br>${data[index].location.city}, ${data[index].location.state} ${data[index].location.postcode}</p>
                         <p class="modal-text">Birthday: ${birthday}</p>
                     </div>
                   <div class="modal-btn-container">
@@ -105,7 +105,7 @@ function generateModal(data, index) {
     document.getElementById('modal-next').classList.remove('btn');
     document.getElementById('modal-next').disabled = true;
   }
-  //modalHandler accepts buttonText as an argument and calls generateModal or closes the modal accordingly..
+  //modalHandler accepts buttonText as an argument and calls generateModal or closes the modal accordingly.
   function modalHandler(buttonText) {
     if (buttonText === 'X') {
       modalContainer.style.display = 'none';
@@ -127,7 +127,6 @@ function generateModal(data, index) {
  document.getElementById('modal-next').addEventListener('click', (event) => {
     modalHandler(event.target.textContent);
   });
-
 }
 
 //Adds a function so clicking anywhere outside of the modal closes it. Adapted from https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal_close.
@@ -147,10 +146,10 @@ function searchEmployees(input) {
   let filteredResults = [];
   dataArray.forEach(person => {
     let fullName = `${person.name.first} ${person.name.last}`
-    if (fullName.toLocaleLowerCase().includes(input.toLocaleLowerCase())) {
+    if (fullName.toLowerCase().includes(input.toLowerCase())) {
       filteredResults.push(person);
       generateGallery(filteredResults);
-      cardHandlers(filteredResults);
+      cardHandler(filteredResults);
     }
   });
   if (filteredResults.length === 0) {
